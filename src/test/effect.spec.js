@@ -12,4 +12,16 @@ describe('effect',()=>{
         obj.foo++
         expect(count).toBe(2)
     })
+    it('runner',()=>{
+        let obj = 10
+        
+        let runner  = effect(()=>{
+            obj++
+            return 100
+        })
+        expect(obj).toBe(11)
+        let r = runner() 
+        expect(obj).toBe(12)
+        expect(r).toBe(100)
+    })
 })

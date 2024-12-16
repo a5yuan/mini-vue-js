@@ -6,7 +6,7 @@ class reactiveEffect{
     }
     run(){
         currentEffect = this
-        this._fn()
+        return this._fn()
     }
 
 }
@@ -45,5 +45,8 @@ let currentEffect
 export function effect(fn){
     //* 调用 fn
     let _effect = new reactiveEffect(fn)
-   _effect.run()
+    _effect.run()
+    let runner = _effect.run.bind(_effect)
+    
+    return runner
 }
