@@ -1,6 +1,7 @@
 
 class reactiveEffect {
     deps = []
+    active = true
     constructor(fn,  schedules) {
         this._fn = fn
         this._schedules = schedules
@@ -9,7 +10,19 @@ class reactiveEffect {
         currentEffect = this
         return this._fn()
     }
+    stop(){
+        if(this.active){
+            clearEffect(this)
+            this.active = false
+        }
+    }
 
+}
+//* 清空依赖
+function clearEffect(effect){
+    effect.deps.forEach((e)=>{
+        e.delete(effect)
+    })
 }
 let targetMap = new Map()
 export const track = (target, key) => {
@@ -26,10 +39,10 @@ export const track = (target, key) => {
         dep = new Set()
         depMap.set(key, dep)
     }
-
     //* 添加到 reactiveEffect类
-
     dep.add(currentEffect)
+    //* 添加到 deps 中
+    currentEffect.deps.push(dep)
 
 }
 export const trigger = (target, key, value) => {
@@ -43,8 +56,7 @@ export const trigger = (target, key, value) => {
             element.run()
         }
     }
-    //* 添加到 deps 中
-    currentEffect.deps.push(dep)
+    
 }
 //* 绑定 this
 let currentEffect
@@ -53,6 +65,10 @@ export function effect(fn, options={}) {
     let _effect = new reactiveEffect(fn, options.schedules)
     _effect.run()
     let runner = _effect.run.bind(_effect)
-
+    runner.effect = _effect
     return runner
+}
+
+export function stop(runner){
+    runner.effect.stop()
 }

@@ -1,5 +1,6 @@
 import { reactive } from "../reactivity/reactive"
-import { effect } from "../reactivity/effect"
+import { effect,stop } from "../reactivity/effect"
+
 describe('effect',()=>{
     it('happy path',()=>{
         expect(1).toBe(1)
@@ -42,5 +43,20 @@ describe('effect',()=>{
         expect(dummy).toBe(1)
         run()
         expect(dummy).toBe(2)
+    })
+    it('stop',()=>{
+        let dummy
+        let obj = reactive({foo:1})
+        const runner = effect(()=>{
+            dummy = obj.foo
+        })
+        expect(dummy).toBe(1)
+        stop(runner)
+        obj.foo = 2
+        expect(dummy).toBe(1)
+        runner()
+        obj.foo = 3
+        stop(runner)
+        expect(dummy).toBe(3)
     })
 })
