@@ -24,4 +24,23 @@ describe('effect',()=>{
         expect(obj).toBe(12)
         expect(r).toBe(100)
     })
+    it('schedules',()=>{
+        
+        let dummy
+        let run
+        const schedules = jest.fn(()=>{
+            run = runner
+        })        
+        let obj =  reactive({foo:1})
+        const runner = effect(()=>{
+             dummy  = obj.foo
+        },{schedules})
+        expect(schedules).not.toHaveBeenCalled()
+        expect(dummy).toBe(1)
+        obj.foo++
+        expect(schedules).toHaveBeenCalledTimes(1)
+        expect(dummy).toBe(1)
+        run()
+        expect(dummy).toBe(2)
+    })
 })
