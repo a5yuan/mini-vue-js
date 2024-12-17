@@ -2,9 +2,11 @@
 class reactiveEffect {
     deps = []
     active = true
-    constructor(fn,  schedules) {
+    
+    constructor(fn, schedules,onstop) {
         this._fn = fn
-        this._schedules = schedules
+        this.schedules = schedules
+        this.onstop = onstop
     }
     run() {
         currentEffect = this
@@ -12,6 +14,9 @@ class reactiveEffect {
     }
     stop(){
         if(this.active){
+            if(this.onStop){
+                this.onStop()
+            }
             clearEffect(this)
             this.active = false
         }
@@ -50,8 +55,8 @@ export const trigger = (target, key, value) => {
     let dep = depMap.get(key)
     for (const element of dep) {
         //* 执行
-        if (element._schedules) {
-            element._schedules()
+        if (element.schedules) {
+            element.schedules()
         } else {
             element.run()
         }
@@ -62,7 +67,8 @@ export const trigger = (target, key, value) => {
 let currentEffect
 export function effect(fn, options={}) {
     //* 调用 fn
-    let _effect = new reactiveEffect(fn, options.schedules)
+    let _effect = new reactiveEffect(fn)
+    Object.assign(_effect,options)
     _effect.run()
     let runner = _effect.run.bind(_effect)
     runner.effect = _effect
