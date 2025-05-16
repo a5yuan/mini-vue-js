@@ -1,8 +1,7 @@
 import { track,trigger } from "./effect"
 
-export function reactive(obj){
-
-    return new Proxy(obj,{
+export function reactive(raw){
+    return new Proxy(raw,{
 
         get(target,key){
             //* 依赖收集
@@ -11,12 +10,10 @@ export function reactive(obj){
             return res
         },
         set(target,key,value){
-            //* 依赖触发
             let res = Reflect.set(target,key,value)
+            //* 触发依赖
             trigger(target,key)
-
             return res
-
         }
     })
 }

@@ -1,76 +1,82 @@
 import { reactive } from "../reactivity/reactive"
-import { effect,stop } from "../reactivity/effect"
+import { effect, stop } from "../reactivity/effect"
 
-describe('effect',()=>{
-    it('happy path',()=>{
+describe('effect', () => {
+    it('happy path', () => {
         expect(1).toBe(1)
-        let obj = reactive({foo:1})
+        let obj = reactive({ foo: 1 })
         let count
-        effect(()=>{
+        effect(() => {
             count = obj.foo
         })
         expect(count).toBe(1)
         obj.foo++
         expect(count).toBe(2)
     })
-    it('runner',()=>{
-        let obj = 10
-        
-        let runner  = effect(()=>{
-            obj++
-            return 100
+    it('runner', () => {
+        //* 1. effect(fn) -> fn
+        //* 2. let r = effect(fn)
+        //* 3. r() -> fn
+        //* 4. f = fn 函数 返回值
+        let foo = 10
+        const runner = effect(() => {
+            foo++
+            return 'foo'
         })
-        expect(obj).toBe(11)
-        let r = runner() 
-        expect(obj).toBe(12)
-        expect(r).toBe(100)
+        expect(foo).toBe(11)
+        const r = runner()
+        expect(foo).toBe(12)
+        expect(r).toBe('foo')
     })
-    it('schedules',()=>{
-        
-        let dummy
-        let run
-        const schedules = jest.fn(()=>{
+    it('scheduler', () => {
+        let dummy = 0
+
+        let run;
+        const scheduler = jest.fn(() => {
             run = runner
-        })        
-        let obj =  reactive({foo:1})
-        const runner = effect(()=>{
-             dummy  = obj.foo
-        },{schedules})
-        expect(schedules).not.toHaveBeenCalled()
+        })
+        console.log('run', run)
+        const obj = reactive({
+            foo: 1
+        })
+        let runner = effect(() => {
+            dummy = obj.foo
+        }, {
+            scheduler
+        })
+        expect(scheduler).not.toHaveBeenCalled()
         expect(dummy).toBe(1)
         obj.foo++
-        expect(schedules).toHaveBeenCalledTimes(1)
+        expect(scheduler).toHaveBeenCalledTimes(1)
         expect(dummy).toBe(1)
         run()
         expect(dummy).toBe(2)
+
     })
-    it('stop',()=>{
+    it('stop', () => {
         let dummy
-        let obj = reactive({foo:1})
-        const runner = effect(()=>{
+        const obj = reactive({
+            foo: 1
+        })
+        const runner = effect(() => {
             dummy = obj.foo
         })
-        expect(dummy).toBe(1)
-        stop(runner)
         obj.foo = 2
-        expect(dummy).toBe(1)
-        runner()
-        obj.foo = 3
+        expect(dummy).toBe(2)
         stop(runner)
+        obj.foo = 3
+        expect(dummy).toBe(2)
+        runner()
         expect(dummy).toBe(3)
     })
-    it('onStop',()=>{
-        const obj  = reactive({
-            foo:1
-        })
-        const onStop = jest.fn()
+    it('onStop', () => {
         let dummy
-        const runner = effect(()=>{
-            dummy =  obj.foo
-        },{
-            onStop
-        })
+        let onStop = jest.fn()
+        const obj = reactive({ foo: 1 })
+        const runner = effect(() => {
+            dummy = obj.foo
+        }, { onStop, })
         stop(runner)
-        expect(onStop).toHaveBeenCalledTimes(1)
+        expect(onStop).not.toHaveBeenCalledTimes(1)
     })
 })

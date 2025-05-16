@@ -1,80 +1,79 @@
-
-class reactiveEffect {
+import { extend } from "../share/extend"
+class ReactiveEffect {
     deps = []
     active = true
-    
-    constructor(fn, schedules,onstop) {
+    onStop
+    constructor(fn,options={}){
         this._fn = fn
-        this.schedules = schedules
-        this.onstop = onstop
+        this.scheduler = options.scheduler
     }
-    run() {
-        currentEffect = this
+    run(){
+        activeEffect = this
         return this._fn()
     }
     stop(){
+        //* 多次调用 stop  执行一次
         if(this.active){
+            clearUpEffect(activeEffect)
             if(this.onStop){
                 this.onStop()
             }
-            clearEffect(this)
             this.active = false
         }
     }
-
 }
-//* 清空依赖
-function clearEffect(effect){
-    effect.deps.forEach((e)=>{
-        e.delete(effect)
-    })
+function clearUpEffect(effect){
+    effect.deps.forEach(dep => {
+            dep.delete(effect)
+        });
 }
 let targetMap = new Map()
-export const track = (target, key) => {
-    //* 存储
-    //* targetMap -> key -> dep
-    let depMap = targetMap.get(target)
-    if (!depMap) {
-        //* init
-        depMap = new Map()
-        targetMap.set(target, depMap)
+export function track(target,key){
+    //* target -> key -> dep
+    let keyMap = targetMap.get(target)
+    if(!keyMap){
+        keyMap = new Map()
+        targetMap.set(target,keyMap)    
     }
-    let dep = depMap.get(key)
-    if (!dep) {
-        dep = new Set()
-        depMap.set(key, dep)
-    }
-    //* 添加到 reactiveEffect类
-    dep.add(currentEffect)
-    //* 添加到 deps 中
-    currentEffect.deps.push(dep)
 
+    let dep = keyMap.get(key)
+    if(!dep){
+        dep = new Set()
+        keyMap.set(key,dep)
+    }
+    //* 收集 fn
+    dep.add(activeEffect)
+    activeEffect.deps.push(dep)
 }
-export const trigger = (target, key, value) => {
-    let depMap = targetMap.get(target)
-    let dep = depMap.get(key)
-    for (const element of dep) {
-        //* 执行
-        if (element.schedules) {
-            element.schedules()
-        } else {
-            element.run()
+export function trigger(target,key){
+    let keyMap = targetMap.get(target)
+    let dep = keyMap.get(key)
+    //* 遍历
+    for (const effect of dep) {
+        if(effect.scheduler){
+            effect.scheduler()
+        }else{
+            effect.run()
         }
     }
     
 }
-//* 绑定 this
-let currentEffect
-export function effect(fn, options={}) {
-    //* 调用 fn
-    let _effect = new reactiveEffect(fn)
-    Object.assign(_effect,options)
-    _effect.run()
-    let runner = _effect.run.bind(_effect)
-    runner.effect = _effect
+let activeEffect;
+export function effect(fn,options){
+    
+    let effect = new ReactiveEffect(fn,options)
+    //* 继承 options属性
+    // extend(effect,options)
+    effect.run()
+    const runner = effect.run.bind(effect)
+    //* 获取实例
+    runner.effect = effect
     return runner
 }
 
+//* stop
 export function stop(runner){
+    
     runner.effect.stop()
+
 }
