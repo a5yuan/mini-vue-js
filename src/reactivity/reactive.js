@@ -4,6 +4,10 @@ export function reactive(raw){
     return new Proxy(raw,{
 
         get(target,key){
+            //* isReactive
+            if(key == "isReactive"){
+                return true
+            }
             //* 依赖收集
             let res = Reflect.get(target,key)
             track(target,key)
@@ -16,4 +20,24 @@ export function reactive(raw){
             return res
         }
     })
+}
+export function readonly(raw){
+    return new Proxy(raw,{
+        get(target,key){
+            if(key == "isReactive"){
+                return false
+            }
+            //* 依赖收集
+            let res = Reflect.get(target,key)
+            track(target,key)
+            return res
+        },
+        set(target,key,value){
+            
+            return true
+        }
+    })
+}
+export function isReactive(raw){
+    return raw['isReactive']
 }

@@ -3,65 +3,69 @@ class ReactiveEffect {
     deps = []
     active = true
     onStop
-    constructor(fn,options={}){
+    constructor(fn, options = {}) {
         this._fn = fn
         this.scheduler = options.scheduler
     }
-    run(){
+    run() {
         activeEffect = this
         return this._fn()
     }
-    stop(){
+    stop() {
         //* 多次调用 stop  执行一次
-        if(this.active){
+        if (this.active) {
             clearUpEffect(activeEffect)
-            if(this.onStop){
+            if (this.onStop) {
                 this.onStop()
             }
             this.active = false
         }
     }
 }
-function clearUpEffect(effect){
+function clearUpEffect(effect) {
     effect.deps.forEach(dep => {
-            dep.delete(effect)
-        });
+        dep.delete(effect)
+    });
 }
 let targetMap = new Map()
-export function track(target,key){
+export function track(target, key) {
     //* target -> key -> dep
     let keyMap = targetMap.get(target)
-    if(!keyMap){
+    if (!keyMap) {
         keyMap = new Map()
-        targetMap.set(target,keyMap)    
+        targetMap.set(target, keyMap)
     }
 
     let dep = keyMap.get(key)
-    if(!dep){
+    if (!dep) {
         dep = new Set()
-        keyMap.set(key,dep)
+        keyMap.set(key, dep)
     }
     //* 收集 fn
-    dep.add(activeEffect)
-    activeEffect.deps.push(dep)
+    if (activeEffect) {
+        dep.add(activeEffect)
+        if (activeEffect.deps) {
+            activeEffect.deps.push(dep)
+        }
+    }
 }
-export function trigger(target,key){
+export function trigger(target, key) {
     let keyMap = targetMap.get(target)
     let dep = keyMap.get(key)
     //* 遍历
     for (const effect of dep) {
-        if(effect.scheduler){
+        if (effect.scheduler) {
             effect.scheduler()
-        }else{
+        } else {
             effect.run()
         }
     }
-    
+
 }
 let activeEffect;
-export function effect(fn,options){
-    
-    let effect = new ReactiveEffect(fn,options)
+export function effect(fn, options) {
+
+    let effect = new ReactiveEffect(fn, options)
     //* 继承 options属性
     // extend(effect,options)
     effect.run()
@@ -72,8 +76,8 @@ export function effect(fn,options){
 }
 
 //* stop
-export function stop(runner){
-    
+export function stop(runner) {
+
     runner.effect.stop()
 
 }
