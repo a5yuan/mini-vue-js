@@ -24,8 +24,8 @@ export function reactive(raw){
 export function readonly(raw){
     return new Proxy(raw,{
         get(target,key){
-            if(key == "isReactive"){
-                return false
+            if(key == "isReadonly"){
+                return true
             }
             //* 依赖收集
             let res = Reflect.get(target,key)
@@ -39,5 +39,8 @@ export function readonly(raw){
     })
 }
 export function isReactive(raw){
-    return raw['isReactive']
+    return !!raw['isReactive']
+}
+export function isReadonly(raw){
+    return !!raw['isReadonly']
 }

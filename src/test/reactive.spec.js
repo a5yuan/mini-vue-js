@@ -1,4 +1,4 @@
-import { reactive,isReactive, readonly } from "../reactivity/reactive"
+import { reactive,isReactive, readonly,isReadonly } from "../reactivity/reactive"
 describe('reactive',()=>{
     it('happy path',()=>{
         
@@ -15,6 +15,7 @@ describe('reactive',()=>{
         let ro = readonly(obj)
         expect(isReactive(observed)).toBe(true)
         expect(isReactive(ro)).toBe(false)
+        expect(isReadonly(ro)).toBe(true)
 
         
         
