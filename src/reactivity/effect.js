@@ -1,4 +1,7 @@
 import { extend } from "../share/extend"
+
+let activeEffect;
+let shouldTrack;
 class ReactiveEffect {
     deps = []
     active = true
@@ -8,8 +11,16 @@ class ReactiveEffect {
         this.scheduler = options.scheduler
     }
     run() {
+        //* stop 状态
+        if(!this.active){
+            return this._fn()
+        }
+        shouldTrack = true
         activeEffect = this
-        return this._fn()
+        let result = this._fn()
+        //* reset
+        shouldTrack  = false
+        return result
     }
     stop() {
         //* 多次调用 stop  执行一次
@@ -29,6 +40,9 @@ function clearUpEffect(effect) {
 }
 let targetMap = new Map()
 export function track(target, key) {
+    //* 收集 fn
+    if (!activeEffect) return
+    if(!shouldTrack)   return
     //* target -> key -> dep
     let keyMap = targetMap.get(target)
     if (!keyMap) {
@@ -41,13 +55,9 @@ export function track(target, key) {
         dep = new Set()
         keyMap.set(key, dep)
     }
-    //* 收集 fn
-    if (activeEffect) {
-        dep.add(activeEffect)
-        if (activeEffect.deps) {
-            activeEffect.deps.push(dep)
-        }
-    }
+    
+    dep.add(activeEffect)
+    activeEffect.deps.push(dep)
 }
 export function trigger(target, key) {
     let keyMap = targetMap.get(target)
@@ -62,7 +72,6 @@ export function trigger(target, key) {
     }
 
 }
-let activeEffect;
 export function effect(fn, options) {
 
     let effect = new ReactiveEffect(fn, options)
