@@ -1,15 +1,21 @@
+import { isObject } from "../share/extend"
 import { track,trigger } from "./effect"
 
 export function reactive(raw){
     return new Proxy(raw,{
 
         get(target,key){
+            
             //* isReactive
             if(key == "isReactive"){
                 return true
             }
             //* 依赖收集
             let res = Reflect.get(target,key)
+            if(isObject(res)){
+                console.log('target',target)
+                return reactive(res)
+            }
             track(target,key)
             return res
         },
@@ -29,6 +35,10 @@ export function readonly(raw){
             }
             //* 依赖收集
             let res = Reflect.get(target,key)
+            if(isObject(res)){
+                console.log('target',target)
+                return readonly(res)
+            }
             track(target,key)
             return res
         },

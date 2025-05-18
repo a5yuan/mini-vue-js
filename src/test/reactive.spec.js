@@ -15,10 +15,16 @@ describe('reactive',()=>{
         let ro = readonly(obj)
         expect(isReactive(observed)).toBe(true)
         expect(isReactive(ro)).toBe(false)
-        expect(isReadonly(ro)).toBe(true)
-
-        
-        
+        expect(isReadonly(ro)).toBe(true)    
     })  
 
+    it(' object type isReactive isReadonly',()=>{
+        //* 复杂对象结构
+        let obj = {foo:1, tail:{a:1}}
+        let observed = reactive(obj)
+        let only = readonly(obj)
+        expect(isReactive(observed)).toBe(true)
+        expect(isReactive(observed.tail)).toBe(true)
+        expect(isReadonly(only.tail)).toBe(true)
+    })
 })
