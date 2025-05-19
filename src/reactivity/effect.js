@@ -55,13 +55,20 @@ export function track(target, key) {
         dep = new Set()
         keyMap.set(key, dep)
     }
+    trackEffect(dep)
     
+}
+export function trackEffect(dep){
     dep.add(activeEffect)
     activeEffect.deps.push(dep)
 }
 export function trigger(target, key) {
     let keyMap = targetMap.get(target)
     let dep = keyMap.get(key)
+    triggerEffect(dep)
+
+}
+export function triggerEffect(dep){
     //* 遍历
     for (const effect of dep) {
         if (effect.scheduler) {
@@ -70,7 +77,6 @@ export function trigger(target, key) {
             effect.run()
         }
     }
-
 }
 export function effect(fn, options) {
 
@@ -89,4 +95,7 @@ export function stop(runner) {
 
     runner.effect.stop()
 
+}
+export function isTracking(){
+    return shouldTrack && activeEffect !== undefined
 }
