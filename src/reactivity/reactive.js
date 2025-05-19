@@ -27,7 +27,7 @@ export function reactive(raw){
         }
     })
 }
-export function readonly(raw){
+export function readonly(raw,shallow = false){
     return new Proxy(raw,{
         get(target,key){
             if(key == "isReadonly"){
@@ -35,6 +35,10 @@ export function readonly(raw){
             }
             //* 依赖收集
             let res = Reflect.get(target,key)
+
+            if(shallow){
+                return res
+            }
             if(isObject(res)){
                 console.log('target',target)
                 return readonly(res)
@@ -53,4 +57,11 @@ export function isReactive(raw){
 }
 export function isReadonly(raw){
     return !!raw['isReadonly']
+}
+export function shallowReadonly(raw){
+    return readonly(raw,true)
+}
+export function isProxy(raw){
+    //* 是否 通过  reactive or readonly 创建的
+    return isReactive(raw) || isReadonly(raw)
 }

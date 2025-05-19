@@ -1,4 +1,4 @@
-import { reactive,isReactive, readonly,isReadonly } from "../reactivity/reactive"
+import { reactive,isReactive, readonly,isReadonly,isProxy } from "../reactivity/reactive"
 describe('reactive',()=>{
     it('happy path',()=>{
         
@@ -26,5 +26,12 @@ describe('reactive',()=>{
         expect(isReactive(observed)).toBe(true)
         expect(isReactive(observed.tail)).toBe(true)
         expect(isReadonly(only.tail)).toBe(true)
+    })
+    it('isProx object',()=>{
+        let obj = {foo:1, tail:{a:1}}
+        let observed = reactive(obj)
+        let only = readonly(obj)
+        expect(isProxy(observed)).toBe(true)
+        expect(isProxy(only)).toBe(true)
     })
 })
