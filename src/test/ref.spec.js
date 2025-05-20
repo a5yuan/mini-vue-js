@@ -1,7 +1,7 @@
 
 import { effect } from "../reactivity/effect"
 import { reactive } from "../reactivity/reactive"
-import { isRef, ref,unRef } from "../reactivity/ref"
+import { isRef, ref,unRef,proxyRef } from "../reactivity/ref"
 describe(' ref',()=>{
     it('main',()=>{
         
@@ -57,5 +57,26 @@ describe(' ref',()=>{
         let result = unRef(a)
         expect(result).toBe(1)
     })
-    it('')
+    it('proxyRef',()=>{
+        //* 如 template 中 获取 无需 .value
+        const user = {
+            age:ref(18),
+            name:'yuan'
+        }
+        //* get
+        let proxyUser = proxyRef(user)
+        expect(user.age.value).toBe(18)
+        expect(proxyUser.age).toBe(18)
+        expect(proxyUser.name).toBe('yuan')
+        //* set
+        proxyUser.age = 20
+        expect(proxyUser.age).toBe(20)
+        expect(user.age.value).toBe(20)
+        
+        proxyUser.age = ref(10)
+        expect(proxyUser.age).toBe(10)
+        expect(user.age.value).toBe(10)
+
+
+    })
 })
