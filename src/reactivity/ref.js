@@ -4,6 +4,7 @@ class RefImpl {
     _value
     dep
     _rawValue
+    __v_isRef = true
     constructor(value) {
         //* 判断 对象
 
@@ -31,4 +32,13 @@ export function createReactive(value){
 }
 export function ref(raw) {
     return new RefImpl(raw)
+}
+
+export function isRef(raw){
+    // return raw instanceof RefImpl
+    return !!raw.__v_isRef
+}
+
+export function  unRef(raw){
+    return isRef(raw) ? raw.value  :  raw
 }

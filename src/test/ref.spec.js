@@ -1,6 +1,7 @@
 
 import { effect } from "../reactivity/effect"
-import { ref } from "../reactivity/ref"
+import { reactive } from "../reactivity/reactive"
+import { isRef, ref,unRef } from "../reactivity/ref"
 describe(' ref',()=>{
     it('main',()=>{
         
@@ -43,4 +44,18 @@ describe(' ref',()=>{
         expect(a).toBe(3)
 
     })
+
+    it('isRef',()=>{
+        const a = ref(1)
+        const b = reactive({a:1})
+        expect(isRef(a)).toBe(true)
+        expect(isRef(1)).toBe(false)
+        expect(isRef(b)).toBe(false)
+    })
+    it('unRef',()=>{
+        const a = ref(1)
+        let result = unRef(a)
+        expect(result).toBe(1)
+    })
+    it('')
 })
