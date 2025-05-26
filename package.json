@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build" : "rollup -c rollup.config.js"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/jest": "^29.5.14"
+    "@types/jest": "^29.5.14",
+    "rollup": "^4.41.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
