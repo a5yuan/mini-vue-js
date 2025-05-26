@@ -1,4 +1,5 @@
 import { createVNode } from "./createVNode"
+import { render } from "./render"
 export function createApp(rootComponent){
 
     
@@ -15,6 +16,3 @@ export function createApp(rootComponent){
     }
 }
 
-function render(vNode,container){
-
-}
