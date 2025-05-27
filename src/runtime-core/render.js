@@ -6,6 +6,8 @@ export function render(vNode,container){
 
 function patch(vNode,container){
     //* 处理组件
+    //* 如何 区分 element 和 component 类型
+    console.log('vNode', vNode);
     processComponent(vNode,container)
 }
 
@@ -19,6 +21,6 @@ function mountComponent(vNode,container){
     setupRendEffect(instance,container)
 }
 function setupRendEffect(instance,container){
-    const subTree = instance.setup()
+    const subTree = instance.render()
     patch(subTree,container)
 }

@@ -1,5 +1,5 @@
 
-
+import { h } from "../../lib/guide-mini-vue.es.js"
 export const App = {
     //* vue3
     //*  template
