@@ -5,10 +5,12 @@ export const App = {
     //*  template
     //* rend
     render() {
-        return h('div', { id: 'root', class: ['red', 'blue'] }, [h('p', { id: 'red', class: 'red'}, 'hi,red'),h('p', { id: 'blue', class: 'blue'}, 'hi,blue')])
+        return h('div', { id: 'root', class: ['red', 'blue'] },'hi-' + this.msg
+            // [h('p', { id: 'red', class: 'red' }, 'hi,red'), h('p', { id: 'blue', class: 'blue' }, 'hi,blue')]
+        )
     },
     setup() {
 
-        return { msg: 'word' }
+        return { msg: 'word-yuan' }
     }
 }
