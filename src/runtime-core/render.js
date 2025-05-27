@@ -26,7 +26,7 @@ function processElement(vNode, container) {
 function mountElement(vNode, container) {
     //* 挂载元素
     const { type, props, children } = vNode
-    const el = document.createElement(type)
+    const el = (vNode.el = document.createElement(type))
     //* child string or Array
     if(typeof children === 'string'){
         el.textContent = children
@@ -41,14 +41,16 @@ function mountElement(vNode, container) {
     }
     container.append(el)
 }
-function mountComponent(vNode, container) {
+function mountComponent(initialVNode, container) {
     //* 创建 组件实例
-    const instance = createComponentInstance(vNode)
+    const instance = createComponentInstance(initialVNode)
     setupComponent(instance)
-    setupRendEffect(instance, container)
+    setupRendEffect(instance,initialVNode, container)
 }
-function setupRendEffect(instance, container) {
+function setupRendEffect(instance,initialVNode,container) {
     const {proxy} = instance
     const subTree = instance.render.call(proxy)
     patch(subTree, container)
+    //* 全部 element挂载后 -> Component
+    initialVNode.el = subTree.el
 }
