@@ -39,6 +39,15 @@ function mountElement(vNode, container) {
         })
     }
     for (const key in props) {
+        console.log('key', key);
+        //* 重构 具体 到 一般
+        //* 事件判断  on + 大写字母
+        const isOn = (str) => /^on[A-Z]/.test(str)
+        if(isOn(key)){
+            //* 设置事件
+            const event = key.slice(2).toLocaleLowerCase()
+            el.addEventListener(event,props[key])
+        }
         el.setAttribute(key, props[key])
     }
     container.append(el)
