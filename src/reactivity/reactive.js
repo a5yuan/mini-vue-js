@@ -1,67 +1,78 @@
 import { isObject } from "../share/extend"
-import { track,trigger } from "./effect"
+import { track, trigger } from "./effect"
 
-export function reactive(raw){
-    return new Proxy(raw,{
+export function reactive(raw) {
+    if (!isObject(raw)) {
+        console.warn(`target ${raw} 必须是 一个对象`)
+        return raw
+    }
+    return new Proxy(raw, {
+        
+        get(target, key) {
 
-        get(target,key){
-            
             //* isReactive
-            if(key == "isReactive"){
+            if (key == "isReactive") {
                 return true
             }
             //* 依赖收集
-            let res = Reflect.get(target,key)
-            if(isObject(res)){
-                console.log('target',target)
+            let res = Reflect.get(target, key)
+            if (isObject(res)) {
+                console.log('target', target)
                 return reactive(res)
             }
-            track(target,key)
+            track(target, key)
             return res
         },
-        set(target,key,value){
-            let res = Reflect.set(target,key,value)
+        set(target, key, value) {
+            let res = Reflect.set(target, key, value)
             //* 触发依赖
-            trigger(target,key)
+            trigger(target, key)
             return res
         }
     })
 }
-export function readonly(raw,shallow = false){
-    return new Proxy(raw,{
-        get(target,key){
-            if(key == "isReadonly"){
+export function readonly(raw, shallow = false) {
+    if (!isObject(raw)) {
+        console.warn(`target ${raw} 必须是 一个对象`)
+        return raw
+    }
+    return new Proxy(raw, {
+        get(target, key) {
+            
+            if (key == "isReadonly") {
                 return true
             }
             //* 依赖收集
-            let res = Reflect.get(target,key)
+            let res = Reflect.get(target, key)
 
-            if(shallow){
+            if (shallow) {
                 return res
             }
-            if(isObject(res)){
-                console.log('target',target)
+            if (isObject(res)) {
+                console.log('target', target)
                 return readonly(res)
             }
-            track(target,key)
+            track(target, key)
             return res
         },
-        set(target,key,value){
-            
+        set(target, key, value) {
+            console.warn(`Set操作失败: key "${key}" 是只读的`, target)
             return true
         }
     })
 }
-export function isReactive(raw){
+export function isReactive(raw) {
     return !!raw['isReactive']
 }
-export function isReadonly(raw){
+export function isReadonly(raw) {
     return !!raw['isReadonly']
 }
-export function shallowReadonly(raw){
-    return readonly(raw,true)
+export function shallowReadonly(raw) {
+    
+    
+    return readonly(raw, true)
 }
-export function isProxy(raw){
+export function isProxy(raw) {
     //* 是否 通过  reactive or readonly 创建的
     return isReactive(raw) || isReadonly(raw)
 }

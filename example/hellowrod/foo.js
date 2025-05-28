@@ -8,6 +8,8 @@ export const foo = {
         console.log('props', props);
         
         //* 3 props 只读
+        props.count++
+        console.log('props.count', props.count);
     },
     render(){
         //*2 -使用 props.count

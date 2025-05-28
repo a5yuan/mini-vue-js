@@ -1,5 +1,6 @@
 import { initProps } from "./componentProps"
 import { publicInstanceProxyHandles } from "./componentPublicInstance"
+import { shallowReadonly } from "../reactivity/reactive"
 export function createComponentInstance(vNode){
     const component ={
         vNode,
@@ -25,7 +26,8 @@ function setupStatefulComponent(instance){
     instance.proxy = new Proxy({_:instance},publicInstanceProxyHandles)
     const {setup} = Component
     if(setup){
-        const setupResult = setup(instance.props)
+        
+        const setupResult = setup(shallowReadonly(instance.props))
         handleSetupResult(instance,setupResult)
     }
 }
