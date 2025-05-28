@@ -1,4 +1,4 @@
-
+import { hasOwn } from "../share/extend"
 const publicPropertiesMap = {
     $el:(i)=> i.vNode.el,
 }
@@ -6,11 +6,18 @@ const publicPropertiesMap = {
 export const publicInstanceProxyHandles ={
     //* instance 传入
     get({_:instance},key){
-            const {setupState} = instance
-            if(key in setupState){
+            const {setupState,props} = instance
+            //* 相同逻辑 存在其中 就返回
+            //* 对象是否包含 该属性
+            // const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+            
+            if(hasOwn(setupState,key)){
                 return setupState[key]
             }
-            
+            if(hasOwn(props,key)){
+                return props[key]
+            }
+
             let publicGetter = publicPropertiesMap[key]
             if(publicGetter){
                 return publicGetter(instance)
