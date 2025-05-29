@@ -16,10 +16,17 @@ export const App = {
             },
 
             [h('p', { id: 'red', class: 'red' }, 'hi,red'), h(foo, {
-                onAdd() {
+                onAdd(...args) {
+                    console.log(...args);
                     console.log('onAdd');
 
                 },
+                onAddFoo(...args){
+                    console.log('add-Foo');
+
+                    console.log(...args);
+
+                }
             })]
         )
     },
