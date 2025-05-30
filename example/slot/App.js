@@ -7,12 +7,13 @@ export const App = {
     //* rend
     name: 'App',
     render() {
-        const App = h('div',{},'App')
-        const Foo = h(foo,{},[h('p',{},'123')])
+        const App = h('div', {}, 'App')
+        // const Foo = h(foo,{},[h('p',{},'123')])
+        const Foo = h(foo, {}, { header: h('p', {}, 'header'), footer: h('p', {}, 'header') })
         return h(
             'div',
             {},
-            [App,Foo]
+            [App, Foo]
         )
     },
     setup() {
