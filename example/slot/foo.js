@@ -1,6 +1,6 @@
 
 import { h } from "../../lib/guide-mini-vue.es.js"
-
+import { renderSlots } from "../../lib/guide-mini-vue.es.js";
 
 export const foo = {
     name:'foo',
@@ -9,6 +9,6 @@ export const foo = {
     render() {
         const foo = h('p',{},'foo')
         console.log('this.$slots', this.$slots);
-        return h('div', {},[foo,...this.$slots])
+        return h('div', {},[foo,renderSlots(this.$slots)])
     }
 }
