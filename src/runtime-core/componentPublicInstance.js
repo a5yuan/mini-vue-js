@@ -1,6 +1,7 @@
 import { hasOwn } from "../share/extend"
 const publicPropertiesMap = {
     $el:(i)=> i.vNode.el,
+    $slots:(i)=> i.slots
 }
 
 export const publicInstanceProxyHandles ={

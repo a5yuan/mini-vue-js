@@ -7,6 +7,8 @@ export const foo = {
     setup() {
     },
     render() {
-        return h('div', {},'foo')
+        const foo = h('p',{},'foo')
+        console.log('this.$slots', this.$slots);
+        return h('div', {},[foo,...this.$slots])
     }
 }

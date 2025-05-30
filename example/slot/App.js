@@ -8,7 +8,7 @@ export const App = {
     name: 'App',
     render() {
         const App = h('div',{},'App')
-        const Foo = h(foo)
+        const Foo = h(foo,{},[h('p',{},'123')])
         return h(
             'div',
             {},
