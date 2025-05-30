@@ -16,7 +16,7 @@ function patch(vNode, container) {
         processComponent(vNode, container)
 
     }
-    console.log('vNode', vNode);
+    // console.log('vNode', vNode);
 }
 
 function processComponent(vNode, container) {

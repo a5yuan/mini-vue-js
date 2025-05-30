@@ -10,7 +10,8 @@ export const foo = {
         const foo = h('p', {}, 'foo')
         console.log('this.$slots', this.$slots);
         //* 插槽位置 处理
-        //* 具名插槽
-        return h('div', {}, [renderSlots(this.$slots, 'header'), foo, renderSlots(this.$slots, 'footer')])
+        //* 具名插槽 renderSlots(this.$slots, 'header')
+        const age = 18
+        return h('div', {}, [renderSlots(this.$slots, 'header',{age}), foo, renderSlots(this.$slots, 'footer',{age})])
     }
 }

@@ -9,7 +9,16 @@ export const App = {
     render() {
         const App = h('div', {}, 'App')
         // const Foo = h(foo,{},[h('p',{},'123')])
-        const Foo = h(foo, {}, { header: h('p', {}, 'header'), footer: h('p', {}, 'header') })
+        // header: h('p', {}, 'header' 具名
+        //* 作用域
+        const header = ({age})=>{
+            return h('p', {}, 'header'+age)
+        }
+        const footer = ({age})=>{
+            return h('p', {}, 'footer')
+        }
+
+        const Foo = h(foo, {}, { header, footer })
         return h(
             'div',
             {},
