@@ -14,6 +14,14 @@ export function createVNode(type, props, children) {
     } else if (Array.isArray(children)) {
         vNode.shareFlags = vNode.shareFlags | ShareFlags.ARRAY_CHILDREN
     }
+
+    //* slots == element类型 +  children == object
+    if (vNode.shareFlags & ShareFlags.STATEFUL_COMPONENT) {
+        if (typeof children === 'object') {
+            vNode.shareFlags |= ShareFlags.SLOTS_CHILDREN
+
+        }
+    }
     return vNode
 }
 
