@@ -1,5 +1,5 @@
 
-import { h } from "../../lib/guide-mini-vue.es.js"
+import { h,createTextVNode } from "../../lib/guide-mini-vue.es.js"
 import { foo } from "./foo.js"
 export const App = {
     //* vue3
@@ -12,7 +12,7 @@ export const App = {
         // header: h('p', {}, 'header' 具名
         //* 作用域
         const header = ({age})=>{
-            return h('p', {}, 'header'+age)
+            return [h('p', {}, 'header'+age),createTextVNode('你好!')]
         }
         const footer = ({age})=>{
             return h('p', {}, 'footer')
