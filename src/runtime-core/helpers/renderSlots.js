@@ -1,6 +1,7 @@
 import {createVNode} from '../createVNode.js'
 
 export const Fragment = Symbol('Fragment')
+export const Text = Symbol('Text')
 export function renderSlots(slots,name,props){
     const slot = slots[name]
     

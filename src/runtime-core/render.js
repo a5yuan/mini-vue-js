@@ -1,7 +1,7 @@
 import { createComponentInstance, setupComponent } from "./component"
 import { isObject } from "../share/extend";
 import { ShareFlags } from "../share/shareFlags"
-import { Fragment } from "./helpers/renderSlots";
+import { Fragment, Text } from "./helpers/renderSlots";
 export function render(vNode, container) {
     //* patch
     patch(vNode, container)
@@ -16,10 +16,12 @@ function patch(vNode, container) {
     const { shareFlags, type } = vNode
     switch (type) {
         case Fragment:
-            
+
             processFragment(vNode, container)
             break
-
+        case Text:
+            processText(vNode, container)
+            break
 
         default:
             if (shareFlags & ShareFlags.ELEMENT) {
@@ -44,9 +46,15 @@ function processElement(vNode, container) {
 function processFragment(vNode, container) {
     mountChildren(vNode, container)
 }
+function processText(vNode, container) {
+    const { children } = vNode
+    
+    const textNode = vNode.el = document.createTextNode(children)
+    container.append(textNode)
+}
 function mountChildren(vNode, container) {
     vNode.children.forEach((item) => {
-        patch(item,container)
+        patch(item, container)
     })
 }
 function mountElement(vNode, container) {

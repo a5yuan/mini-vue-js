@@ -1,5 +1,6 @@
 
 import { ShareFlags } from "../share/shareFlags"
+import { Text } from "./helpers/renderSlots"
 export function createVNode(type, props, children) {
 
     const vNode = {
@@ -25,6 +26,9 @@ export function createVNode(type, props, children) {
     return vNode
 }
 
+export function createTextVNode(text){
+    createVNode(Text,{},text)
+}
 function getShareFlags(type) {
     return typeof type === 'string' ? ShareFlags.ELEMENT : ShareFlags.STATEFUL_COMPONENT
 
