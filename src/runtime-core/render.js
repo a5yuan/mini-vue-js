@@ -7,7 +7,7 @@ export function render(vNode, container) {
     patch(vNode, container)
 }
 
-function patch(vNode, container) {
+function patch(vNode, container,parent) {
     //* 处理组件
     //* 如何 区分 element 和 component 类型
 
@@ -17,17 +17,17 @@ function patch(vNode, container) {
     switch (type) {
         case Fragment:
 
-            processFragment(vNode, container)
+            processFragment(vNode, container,parent)
             break
         case Text:
-            processText(vNode, container)
+            processText(vNode, container,parent)
             break
 
         default:
             if (shareFlags & ShareFlags.ELEMENT) {
-                processElement(vNode, container)
+                processElement(vNode, container,parent)
             } else if (shareFlags & ShareFlags.STATEFUL_COMPONENT) {
-                processComponent(vNode, container)
+                processComponent(vNode, container,parent)
 
             }
             // console.log('vNode', vNode);
@@ -37,14 +37,14 @@ function patch(vNode, container) {
 
 }
 
-function processComponent(vNode, container) {
-    mountComponent(vNode, container)
+function processComponent(vNode, container,parent) {
+    mountComponent(vNode, container,parent)
 }
-function processElement(vNode, container) {
-    mountElement(vNode, container)
+function processElement(vNode, container,parent) {
+    mountElement(vNode, container,parent)
 }
-function processFragment(vNode, container) {
-    mountChildren(vNode, container)
+function processFragment(vNode, container,parent) {
+    mountChildren(vNode, container,parent)
 }
 function processText(vNode, container) {
     const { children } = vNode
@@ -52,12 +52,12 @@ function processText(vNode, container) {
     const textNode = vNode.el = document.createTextNode(children)
     container.append(textNode)
 }
-function mountChildren(vNode, container) {
+function mountChildren(vNode, container,parent) {
     vNode.children.forEach((item) => {
-        patch(item, container)
+        patch(item, container,parent)
     })
 }
-function mountElement(vNode, container) {
+function mountElement(vNode, container,parent) {
     //* 挂载元素
     const { type, props, children, shareFlags } = vNode
     const el = (vNode.el = document.createElement(type))
@@ -67,7 +67,7 @@ function mountElement(vNode, container) {
 
     } else if (shareFlags & ShareFlags.ARRAY_CHILDREN) {
         children.forEach(v => {
-            patch(v, el)
+            patch(v, el,parent)
         })
     }
     for (const key in props) {
@@ -84,16 +84,16 @@ function mountElement(vNode, container) {
     }
     container.append(el)
 }
-function mountComponent(initialVNode, container) {
+function mountComponent(initialVNode, container,parent) {
     //* 创建 组件实例
-    const instance = createComponentInstance(initialVNode)
+    const instance = createComponentInstance(initialVNode,parent)
     setupComponent(instance)
     setupRendEffect(instance, initialVNode, container)
 }
 function setupRendEffect(instance, initialVNode, container) {
     const { proxy } = instance
     const subTree = instance.render.call(proxy)
-    patch(subTree, container)
+    patch(subTree, container,instance)
     //* 全部 element挂载后 -> Component
     initialVNode.el = subTree.el
 }

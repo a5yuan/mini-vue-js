@@ -4,51 +4,53 @@ import { shallowReadonly } from "../reactivity/reactive"
 import { emit } from "./componentEmit"
 import { initSlots } from "./componentSlots"
 
-export function createComponentInstance(vNode){
-    const component ={
+export function createComponentInstance(vNode, parent) {
+    const component = {
         vNode,
-        $el:null,
-        type:vNode.type,
-        setupState:{},
-        props:{},
-        slots:{},
-        emit:()=>{}
+        $el: null,
+        type: vNode.type,
+        setupState: {},
+        props: {},
+        slots: {},
+        parent,
+        provides: parent ? Object.create(parent.provides)  : {},
+        emit: () => { }
     }
-    component.emit = emit.bind(null,component)
+    component.emit = emit.bind(null, component)
     return component
 }
 
-export function setupComponent(instance){
+export function setupComponent(instance) {
     //*todo
-    initProps(instance,instance.vNode.props)
-    initSlots(instance,instance.vNode.children)
+    initProps(instance, instance.vNode.props)
+    initSlots(instance, instance.vNode.children)
     setupStatefulComponent(instance)
 }
 
-function setupStatefulComponent(instance){
+function setupStatefulComponent(instance) {
     const Component = instance.type
     //* ctx
     //* 事件代理
-    instance.proxy = new Proxy({_:instance},publicInstanceProxyHandles)
-    const {setup} = Component
-    if(setup){
+    instance.proxy = new Proxy({ _: instance }, publicInstanceProxyHandles)
+    const { setup } = Component
+    if (setup) {
         setCurrentInstance(instance)
-        const setupResult = setup(shallowReadonly(instance.props),{emit:instance.emit})
+        const setupResult = setup(shallowReadonly(instance.props), { emit: instance.emit })
         setCurrentInstance(null)
-        handleSetupResult(instance,setupResult)
+        handleSetupResult(instance, setupResult)
     }
 }
-function handleSetupResult(instance,setupResult){
+function handleSetupResult(instance, setupResult) {
     //* 赋值到 实例
     //* 两种情况 
     //todo function
     //* Object
-    if(typeof setupResult === 'object'){
+    if (typeof setupResult === 'object') {
         instance.setupState = setupResult
     }
     finishComponentSetup(instance)
 }
-function finishComponentSetup(instance){
+function finishComponentSetup(instance) {
     const Component = instance.type
     instance.render = Component.render
     // if(Component.render){
@@ -57,9 +59,9 @@ function finishComponentSetup(instance){
 
 let currentInstance = null
 
-export function getCurrentInstance(){
+export function getCurrentInstance() {
     return currentInstance
 }
-export function setCurrentInstance(instance){
+export function setCurrentInstance(instance) {
     currentInstance = instance
 }
