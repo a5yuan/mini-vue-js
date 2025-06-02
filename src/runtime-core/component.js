@@ -3,6 +3,7 @@ import { publicInstanceProxyHandles } from "./componentPublicInstance"
 import { shallowReadonly } from "../reactivity/reactive"
 import { emit } from "./componentEmit"
 import { initSlots } from "./componentSlots"
+import { proxyRef } from "../reactivity/ref.js"
 
 export function createComponentInstance(vNode, parent) {
     const component = {
@@ -36,8 +37,10 @@ function setupStatefulComponent(instance) {
     if (setup) {
         setCurrentInstance(instance)
         const setupResult = setup(shallowReadonly(instance.props), { emit: instance.emit })
+        // console.log('setupResult', setupResult);
         setCurrentInstance(null)
-        handleSetupResult(instance, setupResult)
+        //* 处理模板 ref   
+        handleSetupResult(instance, proxyRef(setupResult))
     }
 }
 function handleSetupResult(instance, setupResult) {
