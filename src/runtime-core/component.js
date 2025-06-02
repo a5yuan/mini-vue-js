@@ -15,6 +15,8 @@ export function createComponentInstance(vNode, parent) {
         slots: {},
         parent,
         provides: parent ? Object.create(parent.provides)  : {},
+        isMounted:false,
+        preTree:{},
         emit: () => { }
     }
     component.emit = emit.bind(null, component)

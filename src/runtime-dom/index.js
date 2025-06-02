@@ -5,15 +5,21 @@ export function createElement(type){
     return document.createElement(type)
 }
 
-export function patchProps(el,key,val){
+export function patchProps(el,key,oldVal,nextVal){
     // console.log('patchProps-----');
+    
     const isOn = (str) => /^on[A-Z]/.test(str)
         if (isOn(key)) {
             //* 设置事件
             const event = key.slice(2).toLocaleLowerCase()
-            el.addEventListener(event, val)
+            el.addEventListener(event, nextVal)
         }
-        el.setAttribute(key, val)
+        if(nextVal === undefined || nextVal === null){
+            el.removeAttribute(key)
+        }else{
+            el.setAttribute(key, nextVal)
+
+        }
 }
 
 export function insert(el,parent){
