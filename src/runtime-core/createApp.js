@@ -1,6 +1,9 @@
 import { createVNode } from "./createVNode"
-import { render } from "./render"
-export function createApp(rootComponent){
+
+
+
+export function createAppAPi(render){
+    return function createApp(rootComponent){
 
     
     return {
@@ -15,4 +18,6 @@ export function createApp(rootComponent){
         }
     }
 }
+}
+
 
