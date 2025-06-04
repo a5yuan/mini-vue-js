@@ -7,7 +7,7 @@ import { effect } from "../reactivity/effect";
 
 
 export function createRenderer(options) {
-    let { createElement, patchProps, insert,removeChild:hostRemove,setElementText } = options
+    let { createElement, patchProps, insert, addChild: hostAdd, removeChild: hostRemove, setElementText } = options
     function render(vNode, container) {
         //* patch
         patch(null, vNode, container, null)
@@ -61,30 +61,50 @@ export function createRenderer(options) {
         const oldProps = n1.props || {}
         const nextProps = n2.props || {}
         const el = (n2.el = n1.el)
-        patchChildren(n1,n2,el)
+        patchChildren(n1, n2, el,parent)
         patchUpdateProps(el, oldProps, nextProps)
     }
-    function patchChildren(n1,n2,container){
+    function patchChildren(n1, n2, container,parent) {
         const preShareFlags = n1.shareFlags
-        const {shareFlags} = n2
+        const { shareFlags } = n2
+        const c1 = n1.children
         const c2 = n2.children
-        if(shareFlags & ShareFlags.TEXT_CHILDREN){
-            if(preShareFlags &  ShareFlags.ARRAY_CHILDREN){
+        if (shareFlags & ShareFlags.TEXT_CHILDREN) {
+            if (preShareFlags & ShareFlags.ARRAY_CHILDREN) {
                 //* 1. 把 pre 清空 
                 unMountedChildren(n1.children)
                 //* 2. 设置 新 text
-                setElementText(container,c2)
+                setElementText(container, c2)
+            }
+            //* text to text
+            if (c1 !== c2) {
+                setElementText(container, c2)
+            }
+
+        } else if (shareFlags & ShareFlags.ARRAY_CHILDREN) {
+            if (preShareFlags & ShareFlags.TEXT_CHILDREN) {
+                //* 1 清空 text
+                setElementText(container, "")
+                //* 2 挂载 arr
+                mountChildren(c2,container,parent)
+            }
+            else if (preShareFlags & ShareFlags.ARRAY_CHILDREN) {
+                //* 1. 把 pre 清空 
+                unMountedChildren(n1.children)
+                //* 2 挂载 arr
+                mountChildren(c2,container,parent)
             }
         }
     }
-    function unMountedChildren(children){
-    for (let index = 0; index < children.length; index++) {
-        const el = children[index].el
-        //*remove
-        hostRemove(el)
-        
+    
+    function unMountedChildren(children) {
+        for (let index = 0; index < children.length; index++) {
+            const el = children[index].el
+            //*remove
+            hostRemove(el)
+
+        }
     }
-}
     function patchUpdateProps(el, oldProps, nextProps) {
         //* 遍历 props 是否更新
         //* 相同无需比较
@@ -109,7 +129,7 @@ export function createRenderer(options) {
     }
 
     function processFragment(n1, n2, container, parent) {
-        mountChildren(n1, n2, container, parent)
+        mountChildren(n2.children, container, parent)
     }
     function processText(n1, n2, container) {
         const { children } = n2
@@ -117,9 +137,9 @@ export function createRenderer(options) {
         const textNode = n2.el = document.createTextNode(children)
         container.append(textNode)
     }
-    function mountChildren(n1, n2, container, parent) {
-        n2.children.forEach((item) => {
-            patch(n1, item, container, parent)
+    function mountChildren(children, container, parent) {
+        children.forEach((item) => {
+            patch(null, item, container, parent)
         })
     }
     function mountElement(vNode, container, parent) {

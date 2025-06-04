@@ -28,6 +28,12 @@ export function insert(el,parent){
     parent.append(el)
 }
 
+export function addChild(container,children){
+    
+    if(container){
+        container.appendChild(children)
+    }
+}
 export function removeChild(children){
     const parent = children.parentNode
     if(parent){
@@ -37,7 +43,7 @@ export function removeChild(children){
 export function setElementText(container,text){
     container.textContent = text
 }
-const renderer = createRenderer({createElement,patchProps,insert,removeChild,setElementText})
+const renderer = createRenderer({createElement,patchProps,insert,addChild,removeChild,setElementText})
 
 export function createApp(...args){
     return renderer.createApp(...args)
