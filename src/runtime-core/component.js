@@ -42,7 +42,7 @@ function setupStatefulComponent(instance) {
         // console.log('setupResult', setupResult);
         setCurrentInstance(null)
         //* 处理模板 ref   
-        handleSetupResult(instance, proxyRef(setupResult))
+        handleSetupResult(instance, setupResult)
     }
 }
 function handleSetupResult(instance, setupResult) {
