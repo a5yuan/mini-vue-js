@@ -22,10 +22,11 @@ export function patchProps(el,key,oldVal,nextVal){
         }
 }
 
-export function insert(el,parent){
+export function insert(child,parent,anchor){
     // console.log('insert-----');
+    // parent.append(el)
+    parent.insertBefore(child,anchor = null)
     
-    parent.append(el)
 }
 
 export function addChild(container,children){

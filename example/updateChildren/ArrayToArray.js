@@ -1,20 +1,72 @@
 import { h, ref } from "../../lib/guide-mini-vue.es.js"
-const preChildren = [h('div',{},'A'),h('div',{},'B')]
-const nextChildren = [h('div',{},'C'),h('div',{},'D')]
+
+
+//* 左侧对比  
+// const preChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     ]
+// const nextChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     h('p', { key: 'D' }, 'D'), 
+//     h('p', { key: 'E' }, 'E')]
+// *右侧对比
+// const preChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     h('p', { key: 'C' }, 'C')]
+// const nextChildren = [
+//     h('p', { key: 'D' }, 'D'), 
+//     h('p', { key: 'E' }, 'E'),
+//     h('p', { key: 'B' }, 'B'), 
+//     h('p', { key: 'C' }, 'C'), 
+//     ]
+//* 新的 比 老的 长
+// const preChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     ]
+// const nextChildren = [
+//     h('p', { key: 'C' }, 'C'),
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     ]
+//* 新的 比 老的 少
+// const preChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     h('p', { key: 'C' }, 'C'),
+//     h('p', { key: 'D' }, 'D'),
+//     ]
+// const nextChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     ]
+const preChildren = [
+    h('p', { key: 'C' }, 'C'),
+    h('p', { key: 'A' }, 'A'), 
+    h('p', { key: 'B' }, 'B'), 
+    
+    ]
+const nextChildren = [
+    h('p', { key: 'A' }, 'A'), 
+    h('p', { key: 'B' }, 'B'), 
+    ]
 export const ArrayToArray = {
-    name:'ArrayToArray',
-    setup(){
+    name: 'ArrayToArray',
+    setup() {
         let isChange = ref(false)
         window.isChange = isChange
-        
+
         return {
             isChange,
             preChildren,
             nextChildren
         }
     },
-    render(){
+    render() {
         const self = this
-        return  self.isChange.value ===  true ? h('div',{},nextChildren) : h('div',{},preChildren)
+        return self.isChange.value === true ? h('div', {}, nextChildren) : h('div', {}, preChildren)
     }
 }
