@@ -23,15 +23,16 @@ import { h, ref } from "../../lib/guide-mini-vue.es.js"
 //     h('p', { key: 'C' }, 'C'), 
 //     ]
 //* 新的 比 老的 长
-// const preChildren = [
-//     h('p', { key: 'A' }, 'A'), 
-//     h('p', { key: 'B' }, 'B'), 
-//     ]
-// const nextChildren = [
-//     h('p', { key: 'C' }, 'C'),
-//     h('p', { key: 'A' }, 'A'), 
-//     h('p', { key: 'B' }, 'B'), 
-//     ]
+const preChildren = [
+    h('p', { key: 'A' }, 'A'), 
+    h('p', { key: 'B' }, 'B'), 
+    ]
+const nextChildren = [
+    h('p', { key: 'D' }, 'D'),
+    h('p', { key: 'C' }, 'C'),
+    h('p', { key: 'A' }, 'A'), 
+    h('p', { key: 'B' }, 'B'), 
+    ]
 //* 新的 比 老的 少
 // const preChildren = [
 //     h('p', { key: 'A' }, 'A'), 
@@ -43,16 +44,16 @@ import { h, ref } from "../../lib/guide-mini-vue.es.js"
 //     h('p', { key: 'A' }, 'A'), 
 //     h('p', { key: 'B' }, 'B'), 
 //     ]
-const preChildren = [
-    h('p', { key: 'C' }, 'C'),
-    h('p', { key: 'A' }, 'A'), 
-    h('p', { key: 'B' }, 'B'), 
+// const preChildren = [
+//     h('p', { key: 'C' }, 'C'),
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
     
-    ]
-const nextChildren = [
-    h('p', { key: 'A' }, 'A'), 
-    h('p', { key: 'B' }, 'B'), 
-    ]
+//     ]
+// const nextChildren = [
+//     h('p', { key: 'A' }, 'A'), 
+//     h('p', { key: 'B' }, 'B'), 
+//     ]
 export const ArrayToArray = {
     name: 'ArrayToArray',
     setup() {

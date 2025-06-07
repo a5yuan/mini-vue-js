@@ -129,7 +129,7 @@ export function createRenderer(options) {
         if(i> e1 ){
             if(i<=e2){
                 //todo 锚点获取
-                const nextAnchor = i + 1
+                const nextAnchor = e2 + 1
                 const Anchor = nextAnchor < c2.length ? c2[nextAnchor].el : null
                 while(i<=e2){
                     patch(null,c2[i],container,parent,Anchor)
