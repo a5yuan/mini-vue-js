@@ -158,6 +158,10 @@ export function createRenderer(options) {
             let keyToNewMap = new Map()
             //* 建立 定长映射列表 -->  获取最长递增子序列
             let newToOldKeyMap = new Array(toBeNewNum)
+
+            //* 移动
+            let moved = false
+            let newIndexToFar = 0
             for (let i = 0; i < toBeNewNum; i++) {
                 //* 值为 0  表示未处理
                 newToOldKeyMap[i] = 0
@@ -195,6 +199,11 @@ export function createRenderer(options) {
                 if (newIndex == null) {
                     hostRemove(preChild.el)
                 } else {
+                    if(newIndex >= newIndexToFar){
+                        newIndexToFar = newIndex
+                    }else{
+                        moved = true
+                    }
                     //* 存储 新节点的 序号
                     newToOldKeyMap[newIndex - s2] = i + 1 //* 防止 i为0
 
@@ -206,7 +215,7 @@ export function createRenderer(options) {
             }
 
             //* 获取最长递增子序列
-            const increasingNewIndexSequence = LIS(newToOldKeyMap,s2)
+            const increasingNewIndexSequence = moved ? LIS(newToOldKeyMap,s2) : []
             let j = increasingNewIndexSequence.length - 1
             //* 比对
             //* 倒序 insert
@@ -214,12 +223,15 @@ export function createRenderer(options) {
                 const newIndex = i+s2
                 const nextChild = c2[newIndex]
                 let anchor = newIndex + 1 < c2.length ? c2[newIndex+1].el  : null
-                if (j< 0 || increasingNewIndexSequence[j] !== i) {
-                    
-                    console.log(`${c2[i+s2].children}  -需要移动`)
-                    insert(nextChild.el, container, anchor)
-                } else {
-                    j--
+                if(moved){
+                    if (j< 0 || increasingNewIndexSequence[j] !== i) {
+                        
+                        console.log(`${c2[i+s2].children}  -需要移动`)
+                        insert(nextChild.el, container, anchor)
+                    } else {
+                        j--
+                    }
+
                 }
 
             }
