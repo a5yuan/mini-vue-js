@@ -186,7 +186,7 @@ export function createRenderer(options) {
                     newIndex = keyToNewMap.get(preChild.key)
                 } else {
                     //* 无key 循环
-                    for (let j = s2; j < e2; j++) {
+                    for (let j = s2; j <= e2; j++) {
                         let nextChild = c2[j]
                         if (isSomeVNode(preChild, nextChild)) {
                             newIndex = j
@@ -220,10 +220,13 @@ export function createRenderer(options) {
             //* 比对
             //* 倒序 insert
             for (let i = toBeNewNum - 1; i >= 0; i--) {
-                const newIndex = i+s2
+                const newIndex = i+ s2
                 const nextChild = c2[newIndex]
                 let anchor = newIndex + 1 < c2.length ? c2[newIndex+1].el  : null
-                if(moved){
+                if(newToOldKeyMap[i]===0){
+                    patch(null,nextChild,container,parent,anchor)
+                }
+                else if(moved){
                     if (j< 0 || increasingNewIndexSequence[j] !== i) {
                         
                         console.log(`${c2[i+s2].children}  -需要移动`)
