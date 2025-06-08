@@ -207,14 +207,19 @@ export function createRenderer(options) {
 
             //* 获取最长递增子序列
             const increasingNewIndexSequence = LIS(newToOldKeyMap,s2)
-            let j = 0
+            let j = increasingNewIndexSequence.length - 1
             //* 比对
-            for (let i = 0; i < toBeNewNum; i++) {
-                debugger
-                if (increasingNewIndexSequence[j] !== i) {
+            //* 倒序 insert
+            for (let i = toBeNewNum - 1; i >= 0; i--) {
+                const newIndex = i+s2
+                const nextChild = c2[newIndex]
+                let anchor = newIndex + 1 < c2.length ? c2[newIndex+1].el  : null
+                if (j< 0 || increasingNewIndexSequence[j] !== i) {
+                    
                     console.log(`${c2[i+s2].children}  -需要移动`)
+                    insert(nextChild.el, container, anchor)
                 } else {
-                    j++
+                    j--
                 }
 
             }

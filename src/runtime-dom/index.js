@@ -25,7 +25,7 @@ export function patchProps(el,key,oldVal,nextVal){
 export function insert(child,parent,anchor){
     // console.log('insert-----');
     // parent.append(el)
-    parent.insertBefore(child,anchor || null)
+    parent.insertBefore(child,anchor)
     
 }
 
