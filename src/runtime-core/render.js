@@ -5,6 +5,7 @@ import { Fragment, Text } from "./helpers/renderSlots";
 import { createAppAPi } from "./createApp";
 import { effect } from "../reactivity/effect";
 import { shouldUpdateComponent } from "./helpers/componentUpdateUtils";
+import { queueJobs } from "./scheduler";
 
 
 export function createRenderer(options) {
@@ -246,7 +247,7 @@ export function createRenderer(options) {
             }
         }
 
-        console.log('i', i);
+        // console.log('i', i);
     }
     function unMountedChildren(children) {
         for (let index = 0; index < children.length; index++) {
@@ -384,6 +385,12 @@ export function createRenderer(options) {
                 return
             }
 
+        },{
+            scheduler:()=>{
+                //* 视图更新 添加到 微任务
+                console.log('update scheduler')
+                queueJobs(instance.update)
+            }
         })
     }
     return {
