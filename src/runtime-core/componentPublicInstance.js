@@ -1,7 +1,8 @@
 import { hasOwn } from "../share/extend"
 const publicPropertiesMap = {
     $el: (i) => i.vNode.el,
-    $slots: (i) => i.slots
+    $slots: (i) => i.slots,
+    $props: (i)=> i.props
 }
 
 export const publicInstanceProxyHandles = {
@@ -13,7 +14,9 @@ export const publicInstanceProxyHandles = {
         // const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
         if (hasOwn(setupState, key)) {
-            return setupState[key]
+            let val = setupState[key]
+            // 自动解包 ref
+            return val && val.__v_isRef ? val.value : val
         }
         if (hasOwn(props, key)) {
             const val = props[key]

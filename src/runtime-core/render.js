@@ -4,6 +4,7 @@ import { ShareFlags } from "../share/shareFlags"
 import { Fragment, Text } from "./helpers/renderSlots";
 import { createAppAPi } from "./createApp";
 import { effect } from "../reactivity/effect";
+import { shouldUpdateComponent } from "./helpers/componentUpdateUtils";
 
 
 export function createRenderer(options) {
@@ -44,7 +45,12 @@ export function createRenderer(options) {
     }
 
     function processComponent(n1, n2, container, parent, anchor) {
-        mountComponent(n1, n2, container, parent, anchor)
+        if (!n1) {
+            mountComponent(n1, n2, container, parent, anchor)
+        } else {
+            //* 更新组件
+            updateComponent(n1, n2)
+        }
     }
     function processElement(n1, n2, container, parent, anchor) {
         if (!n1) {
@@ -199,9 +205,9 @@ export function createRenderer(options) {
                 if (newIndex == null) {
                     hostRemove(preChild.el)
                 } else {
-                    if(newIndex >= newIndexToFar){
+                    if (newIndex >= newIndexToFar) {
                         newIndexToFar = newIndex
-                    }else{
+                    } else {
                         moved = true
                     }
                     //* 存储 新节点的 序号
@@ -215,21 +221,21 @@ export function createRenderer(options) {
             }
 
             //* 获取最长递增子序列
-            const increasingNewIndexSequence = moved ? LIS(newToOldKeyMap,s2) : []
+            const increasingNewIndexSequence = moved ? LIS(newToOldKeyMap, s2) : []
             let j = increasingNewIndexSequence.length - 1
             //* 比对
             //* 倒序 insert
             for (let i = toBeNewNum - 1; i >= 0; i--) {
-                const newIndex = i+ s2
+                const newIndex = i + s2
                 const nextChild = c2[newIndex]
-                let anchor = newIndex + 1 < c2.length ? c2[newIndex+1].el  : null
-                if(newToOldKeyMap[i]===0){
-                    patch(null,nextChild,container,parent,anchor)
+                let anchor = newIndex + 1 < c2.length ? c2[newIndex + 1].el : null
+                if (newToOldKeyMap[i] === 0) {
+                    patch(null, nextChild, container, parent, anchor)
                 }
-                else if(moved){
-                    if (j< 0 || increasingNewIndexSequence[j] !== i) {
-                        
-                        console.log(`${c2[i+s2].children}  -需要移动`)
+                else if (moved) {
+                    if (j < 0 || increasingNewIndexSequence[j] !== i) {
+
+                        console.log(`${c2[i + s2].children}  -需要移动`)
                         insert(nextChild.el, container, anchor)
                     } else {
                         j--
@@ -322,13 +328,32 @@ export function createRenderer(options) {
     }
     function mountComponent(n1, n2, container, parent, anchor) {
         //* 创建 组件实例
-        const instance = createComponentInstance(n2, parent)
+        //* 初始 component
+        const instance = (n2.component = createComponentInstance(n2, parent))
         setupComponent(instance)
         setupRendEffect(instance, n2, container, anchor)
     }
+    function updateComponent(n1, n2) {
+        const instance = (n2.component = n1.component)
+        //* 判断类型
+        if(shouldUpdateComponent(n1,n2)){
+            instance.next = n2
+            //shedder
+            instance.update()
+        }else{
+            n2.el = n1.el
+            instance.vNode = n2
+        }
+    }
+    function updateComponentPreRender(instance,nextVNode){
+        
+        instance.vNode = nextVNode
+        instance.el = null
+        instance.props = nextVNode.props
+    }
     function setupRendEffect(instance, initialVNode, container, anchor) {
         //* effect 处理
-        effect(() => {
+        instance.update = effect(() => {
 
             //* 1. init
             if (!instance.isMounted) {
@@ -341,6 +366,13 @@ export function createRenderer(options) {
 
                 instance.isMounted = true
             } else {
+                //* 需要一个 vNode
+                const { next,vNode } = instance
+                if(next){
+                    next.el = vNode.el
+                    //* update props
+                    updateComponentPreRender(instance,next)
+                }
                 //* update
                 const { proxy } = instance
                 const subTree = instance.render.call(proxy)
@@ -358,13 +390,13 @@ export function createRenderer(options) {
         createApp: createAppAPi(render)
     }
 }
-const LIS = (numArr,line) => {
+const LIS = (numArr, line) => {
     if (numArr.length === 0) {
         return []
     }
     let result = [[numArr[0]]]
     for (let i = 1; i < numArr.length; i++) {
-        _update(numArr[i]-line)
+        _update(numArr[i] - line)
 
     }
     function _update(n) {

@@ -10,6 +10,8 @@ export function createComponentInstance(vNode, parent) {
         vNode,
         $el: null,
         type: vNode.type,
+        component:null, // 组件
+        next: null, //下一个虚拟节点
         setupState: {},
         props: {},
         slots: {},
