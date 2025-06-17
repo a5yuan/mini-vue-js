@@ -20,3 +20,19 @@ describe('parse',()=>{
     })
     
 })
+describe('element',()=>{
+
+    it('base',()=>{
+
+        let template = "<div> </div>"
+        let ast = baseParse(template)
+        // expect(a).toBe(1)
+        expect(ast.children[0]).toStrictEqual(
+            {
+                type:'element',
+                tag:'div'
+            }
+        )
+    })
+    
+})
